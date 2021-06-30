@@ -8,6 +8,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Accessibility.Models;
 using Azure;
 using Azure.Core.Pipeline;
 
@@ -96,6 +97,40 @@ namespace Accessibility
             try
             {
                 return RestClient.OperationInternal(body, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <param name="body"> The HashResult to use. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        public virtual async Task<Response> ModelOperationAsync(HashResult body = null, CancellationToken cancellationToken = default)
+        {
+            using var scope = _clientDiagnostics.CreateScope("AccessibilityClient.ModelOperation");
+            scope.Start();
+            try
+            {
+                return await RestClient.ModelOperationAsync(body, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <param name="body"> The HashResult to use. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        public virtual Response ModelOperation(HashResult body = null, CancellationToken cancellationToken = default)
+        {
+            using var scope = _clientDiagnostics.CreateScope("AccessibilityClient.ModelOperation");
+            scope.Start();
+            try
+            {
+                return RestClient.ModelOperation(body, cancellationToken);
             }
             catch (Exception e)
             {

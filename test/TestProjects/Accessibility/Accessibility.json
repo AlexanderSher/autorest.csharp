@@ -54,6 +54,37 @@
         },
         "x-accessibility": "internal"
       }
+    },
+    "/ModelOperation/": {
+      "put": {
+        "operationId": "ModelOperation",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/HashResult"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Received correct format"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "HashResult": {
+      "type": "object",
+      "properties": {
+        "hash": {
+          "x-ms-client-name": "DeprecatedHash",
+          "type": "string",
+          "format": "base64url"
+        }
+      }
     }
   }
 }

@@ -234,8 +234,26 @@ namespace AutoRest.CSharp.Generation.Types
         public bool TryCreateType(ITypeSymbol symbol, [NotNullWhen(true)] out CSharpType? type)
         {
             type = null;
-            INamedTypeSymbol? namedTypeSymbol = symbol as INamedTypeSymbol;
-            if (namedTypeSymbol == null)
+
+            //if (symbol is IArrayTypeSymbol arrayTypeSymbol)
+            //{
+            //    var elementType = CreateType(arrayTypeSymbol.ElementType);
+            //    var isNullable = symbol.NullableAnnotation != NullableAnnotation.NotAnnotated;
+            //    type = new CSharpType(typeof(Array), isNullable, elementType);
+            //    return true;
+            //}
+
+            // HACK: Special case byte [] as we don't handle arrays well here
+            if (symbol is IArrayTypeSymbol arrayTypeSymbol)
+            {
+                if (arrayTypeSymbol.ElementType.SpecialType == SpecialType.System_Byte)
+                {
+                    type = new CSharpType(typeof(byte[]));
+                    return true;
+                }
+            }
+
+            if (symbol is not INamedTypeSymbol namedTypeSymbol)
             {
                 throw new InvalidCastException($"Unexpected type {symbol}");
             }
@@ -252,7 +270,7 @@ namespace AutoRest.CSharp.Generation.Types
 
             if (existingType != null)
             {
-                var arguments = namedTypeSymbol.TypeArguments.Select(a => CreateType(a)).ToArray();
+                var arguments = namedTypeSymbol.TypeArguments.Select(CreateType).ToArray();
                 type = new CSharpType(existingType, false, arguments);
             }
             else

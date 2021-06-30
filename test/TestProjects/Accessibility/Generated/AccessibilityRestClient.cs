@@ -8,6 +8,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Accessibility.Models;
 using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
@@ -121,6 +122,55 @@ namespace Accessibility
         public Response OperationInternal(string body = null, CancellationToken cancellationToken = default)
         {
             using var message = CreateOperationInternalRequest(body);
+            _pipeline.Send(message, cancellationToken);
+            switch (message.Response.Status)
+            {
+                case 200:
+                    return message.Response;
+                default:
+                    throw _clientDiagnostics.CreateRequestFailedException(message.Response);
+            }
+        }
+
+        internal HttpMessage CreateModelOperationRequest(HashResult body)
+        {
+            var message = _pipeline.CreateMessage();
+            var request = message.Request;
+            request.Method = RequestMethod.Put;
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(endpoint);
+            uri.AppendPath("/ModelOperation/", false);
+            request.Uri = uri;
+            if (body != null)
+            {
+                request.Headers.Add("Content-Type", "application/json");
+                var content = new Utf8JsonRequestContent();
+                content.JsonWriter.WriteObjectValue(body);
+                request.Content = content;
+            }
+            return message;
+        }
+
+        /// <param name="body"> The HashResult to use. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        public async Task<Response> ModelOperationAsync(HashResult body = null, CancellationToken cancellationToken = default)
+        {
+            using var message = CreateModelOperationRequest(body);
+            await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
+            switch (message.Response.Status)
+            {
+                case 200:
+                    return message.Response;
+                default:
+                    throw await _clientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+            }
+        }
+
+        /// <param name="body"> The HashResult to use. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        public Response ModelOperation(HashResult body = null, CancellationToken cancellationToken = default)
+        {
+            using var message = CreateModelOperationRequest(body);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
