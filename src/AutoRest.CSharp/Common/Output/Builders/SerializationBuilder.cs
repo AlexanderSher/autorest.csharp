@@ -18,15 +18,13 @@ namespace AutoRest.CSharp.Output.Builders
     {
         public ObjectSerialization BuildObject(KnownMediaType mediaType, ObjectSchema objectSchema, SchemaObjectType type)
         {
-            switch (mediaType)
+            return mediaType switch
             {
-                case KnownMediaType.Json:
-                    return BuildJsonObjectSerialization(objectSchema, type);
-                case KnownMediaType.Xml:
-                    return BuildXmlObjectSerialization(objectSchema, type);
-                default:
-                    throw new NotImplementedException($"BuildObject with {mediaType} from {objectSchema.Name}");
-            }
+                KnownMediaType.Json => BuildJsonObjectSerialization(objectSchema, type),
+                KnownMediaType.Multipart => BuildJsonObjectSerialization(objectSchema, type),
+                KnownMediaType.Xml => BuildXmlObjectSerialization(objectSchema, type),
+                _ => throw new NotImplementedException($"BuildObject with {mediaType} from {objectSchema.Name}")
+            };
         }
 
         public ObjectSerialization Build(KnownMediaType? mediaType, Schema schema, CSharpType type)

@@ -277,33 +277,41 @@ namespace AutoRest.CSharp.Output.Models
             {
                 if (mediaType == KnownMediaType.Multipart)
                 {
-                    List<MultipartRequestBodyPart> value = new List<MultipartRequestBodyPart>();
-                    foreach (var parameter in bodyParameters)
+                    /*
+complex, or an array of complex values,                                       Content-Type == application/json
+[type: string] with [format: binary] or [format: base64] (aka a file object), Content-Type == application/octet-stream
+                     */
+                    List<MultipartRequestBodyPart> bodyParts = new List<MultipartRequestBodyPart>();
+                    foreach (var (parameter, value) in bodyParameters)
                     {
-                        var type = parameter.Value.Type;
+                        var type = value.Type;
                         RequestBody requestBody;
 
-                        if (type.Equals(typeof(string)))
+                        if (TypeFactory.IsPrimitiveType(type))
                         {
-                            requestBody = new TextRequestBody(parameter.Value);
+                            requestBody = new TextRequestBody(value);
                         }
-                        else if (type.IsFrameworkType && type.FrameworkType == typeof(Stream))
+                        else if (type.Equals(typeof(Stream)))
                         {
-                            requestBody = new BinaryRequestBody(parameter.Value);
+                            requestBody = new BinaryRequestBody(value);
                         }
                         else if (TypeFactory.IsList(type))
                         {
-                            requestBody = new BinaryCollectionRequestBody(parameter.Value);
+                            requestBody = new BinaryCollectionRequestBody(value);
+                        }
+                        else if (!type.IsFrameworkType && type.Implementation is SchemaObjectType schemaType)
+                        {
+                            requestBody = new SchemaRequestBody(value, schemaType.Serializations[KnownMediaType.Multipart]);
                         }
                         else
                         {
                             throw new NotImplementedException();
                         }
 
-                        value.Add(new MultipartRequestBodyPart(parameter.Value.Reference.Name, requestBody));
+                        bodyParts.Add(new MultipartRequestBodyPart(value.Reference.Name, requestBody));
                     }
 
-                    body = new MultipartRequestBody(value.ToArray());
+                    body = new MultipartRequestBody(bodyParts.ToArray());
                 }
                 else if (mediaType == KnownMediaType.Form)
                 {

@@ -1,0 +1,726 @@
+!CodeModel 
+info: !Info 
+  description: Test Infrastructure for AutoRest
+  title: Multipart
+schemas: !Schemas 
+  booleans:
+    - !BooleanSchema &ref_5
+      type: boolean
+      language: !Languages 
+        default:
+          name: Boolean
+          description: ''
+      protocol: !Protocols {}
+  numbers:
+    - !NumberSchema &ref_6
+      type: integer
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      precision: 32
+      language: !Languages 
+        default:
+          name: PostContentSchemaIntProp
+          description: ''
+      protocol: !Protocols {}
+    - !NumberSchema &ref_7
+      type: integer
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      precision: 32
+      language: !Languages 
+        default:
+          name: PostContentSchemaNumberInt32Prop
+          description: ''
+      protocol: !Protocols {}
+    - !NumberSchema &ref_8
+      type: integer
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      precision: 64
+      language: !Languages 
+        default:
+          name: PostContentSchemaNumberInt64Prop
+          description: ''
+      protocol: !Protocols {}
+    - !NumberSchema &ref_9
+      type: number
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      precision: 32
+      language: !Languages 
+        default:
+          name: PostContentSchemaNumberFloatProp
+          description: ''
+      protocol: !Protocols {}
+    - !NumberSchema &ref_10
+      type: number
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      precision: 64
+      language: !Languages 
+        default:
+          name: PostContentSchemaNumberDoubleProp
+          description: ''
+      protocol: !Protocols {}
+    - !NumberSchema &ref_1
+      type: integer
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      precision: 32
+      language: !Languages 
+        default:
+          name: PostContentSchemaObjPropNestedInt
+          description: ''
+      protocol: !Protocols {}
+  strings:
+    - !StringSchema &ref_0
+      type: string
+      language: !Languages 
+        default:
+          name: String
+          description: simple string
+      protocol: !Protocols {}
+    - !StringSchema &ref_4
+      type: string
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      language: !Languages 
+        default:
+          name: PostRequestBodyContentMultipartFormDataSchemaArrayOfObjPropItemNestedString
+          description: ''
+      protocol: !Protocols {}
+  constants:
+    - !ConstantSchema &ref_24
+      type: constant
+      value: !ConstantValue 
+        value: multipart/form-data
+      valueType: *ref_0
+      language: !Languages 
+        default:
+          name: MultipartFormData
+          description: Content Type 'multipart/form-data'
+      protocol: !Protocols {}
+  binaries:
+    - !BinarySchema &ref_17
+      type: binary
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      language: !Languages 
+        default:
+          name: binary
+          description: ''
+      protocol: !Protocols {}
+    - !BinarySchema &ref_18
+      type: binary
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      language: !Languages 
+        default:
+          name: binary
+          description: ''
+      protocol: !Protocols {}
+    - !BinarySchema &ref_19
+      type: binary
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      language: !Languages 
+        default:
+          name: binary
+          description: ''
+      protocol: !Protocols {}
+  dateTimes:
+    - !DateTimeSchema &ref_12
+      type: date-time
+      format: date-time
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      language: !Languages 
+        default:
+          name: PostContentSchemaDatetimeProp
+          description: ''
+      protocol: !Protocols {}
+    - !DateTimeSchema &ref_13
+      type: date-time
+      format: date-time-rfc1123
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      language: !Languages 
+        default:
+          name: PostContentSchemaDatetimeRfc1123Prop
+          description: ''
+      protocol: !Protocols {}
+  dates:
+    - !DateSchema &ref_11
+      type: date
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      language: !Languages 
+        default:
+          name: PostContentSchemaDateProp
+          description: ''
+      protocol: !Protocols {}
+    - !DateSchema &ref_2
+      type: date
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      language: !Languages 
+        default:
+          name: PostContentSchemaObjPropNestedDate
+          description: ''
+      protocol: !Protocols {}
+  uris:
+    - !UriSchema &ref_15
+      type: uri
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      language: !Languages 
+        default:
+          name: PostContentSchemaUrlProp
+          description: ''
+      protocol: !Protocols {}
+  uuids:
+    - !UuidSchema &ref_14
+      type: uuid
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      language: !Languages 
+        default:
+          name: PostContentSchemaUuidProp
+          description: ''
+      protocol: !Protocols {}
+    - !UuidSchema &ref_3
+      type: uuid
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      language: !Languages 
+        default:
+          name: PostRequestBodyContentMultipartFormDataSchemaArrayOfObjPropItemNestedUuid
+          description: ''
+      protocol: !Protocols {}
+  objects:
+    - !ObjectSchema &ref_16
+      type: object
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      properties:
+        - !Property 
+          schema: *ref_1
+          serializedName: nestedInt
+          language: !Languages 
+            default:
+              name: nestedInt
+              description: ''
+          protocol: !Protocols {}
+        - !Property 
+          schema: *ref_2
+          serializedName: nestedDate
+          language: !Languages 
+            default:
+              name: nestedDate
+              description: ''
+          protocol: !Protocols {}
+      serializationFormats:
+        - multipart
+      usage:
+        - input
+      extensions:
+        x-internal-autorest-anonymous-schema:
+          anonymous: true
+      language: !Languages 
+        default:
+          name: PostContentSchemaObjProp
+          description: ''
+          namespace: ''
+      protocol: !Protocols {}
+    - !ObjectSchema &ref_20
+      type: object
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      properties:
+        - !Property 
+          schema: *ref_3
+          serializedName: nestedUuid
+          language: !Languages 
+            default:
+              name: nestedUuid
+              description: ''
+          protocol: !Protocols {}
+        - !Property 
+          schema: *ref_4
+          serializedName: nestedString
+          language: !Languages 
+            default:
+              name: nestedString
+              description: ''
+          protocol: !Protocols {}
+      serializationFormats:
+        - multipart
+      usage:
+        - input
+      language: !Languages 
+        default:
+          name: PostContentSchemaArrayOfObjPropItem
+          description: ''
+          namespace: ''
+      protocol: !Protocols {}
+    - !ObjectSchema 
+      type: object
+      apiVersions:
+        - !ApiVersion 
+          version: 1.0.0
+      properties:
+        - !Property 
+          schema: *ref_5
+          serializedName: boolProp
+          language: !Languages 
+            default:
+              name: boolProp
+              description: ''
+          protocol: !Protocols {}
+        - !Property 
+          schema: *ref_6
+          serializedName: intProp
+          language: !Languages 
+            default:
+              name: intProp
+              description: ''
+          protocol: !Protocols {}
+        - !Property 
+          schema: *ref_7
+          serializedName: numberInt32Prop
+          language: !Languages 
+            default:
+              name: numberInt32Prop
+              description: ''
+          protocol: !Protocols {}
+        - !Property 
+          schema: *ref_8
+          serializedName: numberInt64Prop
+          language: !Languages 
+            default:
+              name: numberInt64Prop
+              description: ''
+          protocol: !Protocols {}
+        - !Property 
+          schema: *ref_9
+          serializedName: numberFloatProp
+          language: !Languages 
+            default:
+              name: numberFloatProp
+              description: ''
+          protocol: !Protocols {}
+        - !Property 
+          schema: *ref_10
+          serializedName: numberDoubleProp
+          language: !Languages 
+            default:
+              name: numberDoubleProp
+              description: ''
+          protocol: !Protocols {}
+        - !Property 
+          schema: *ref_11
+          serializedName: dateProp
+          language: !Languages 
+            default:
+              name: dateProp
+              description: ''
+          protocol: !Protocols {}
+        - !Property 
+          schema: *ref_12
+          serializedName: datetimeProp
+          language: !Languages 
+            default:
+              name: datetimeProp
+              description: ''
+          protocol: !Protocols {}
+        - !Property 
+          schema: *ref_13
+          serializedName: datetimeRfc1123Prop
+          language: !Languages 
+            default:
+              name: datetimeRfc1123Prop
+              description: ''
+          protocol: !Protocols {}
+        - !Property 
+          schema: *ref_14
+          serializedName: uuidProp
+          language: !Languages 
+            default:
+              name: uuidProp
+              description: ''
+          protocol: !Protocols {}
+        - !Property 
+          schema: *ref_15
+          serializedName: urlProp
+          language: !Languages 
+            default:
+              name: urlProp
+              description: ''
+          protocol: !Protocols {}
+        - !Property 
+          schema: *ref_16
+          serializedName: objProp
+          language: !Languages 
+            default:
+              name: objProp
+              description: ''
+          protocol: !Protocols {}
+        - !Property 
+          schema: *ref_17
+          serializedName: fileName1
+          language: !Languages 
+            default:
+              name: fileName1
+              description: ''
+          protocol: !Protocols {}
+        - !Property 
+          schema: *ref_18
+          serializedName: fileName2
+          language: !Languages 
+            default:
+              name: fileName2
+              description: ''
+          protocol: !Protocols {}
+        - !Property 
+          schema: !ArraySchema &ref_21
+            type: array
+            apiVersions:
+              - !ApiVersion 
+                version: 1.0.0
+            elementType: *ref_19
+            language: !Languages 
+              default:
+                name: PostContentSchemaArrayOfDatetimeProp
+                description: Array of binary
+            protocol: !Protocols {}
+          serializedName: arrayOfDatetimeProp
+          language: !Languages 
+            default:
+              name: arrayOfDatetimeProp
+              description: ''
+          protocol: !Protocols {}
+        - !Property 
+          schema: !ArraySchema &ref_22
+            type: array
+            apiVersions:
+              - !ApiVersion 
+                version: 1.0.0
+            elementType: *ref_20
+            language: !Languages 
+              default:
+                name: PostContentSchemaArrayOfObjProp
+                description: Array of post-content-schema-arrayOfObjPropItem
+            protocol: !Protocols {}
+          serializedName: arrayOfObjProp
+          language: !Languages 
+            default:
+              name: arrayOfObjProp
+              description: ''
+          protocol: !Protocols {}
+      language: !Languages 
+        default:
+          name: Paths1Ec1GbnMultipartPostRequestbodyContentMultipartFormDataSchema
+          description: ''
+          namespace: ''
+      protocol: !Protocols {}
+  arrays:
+    - *ref_21
+    - *ref_22
+globalParameters:
+  - !Parameter &ref_23
+    schema: *ref_0
+    clientDefaultValue: http://localhost:3000
+    implementation: Client
+    origin: modelerfour:synthesized/host
+    required: true
+    extensions:
+      x-ms-skip-url-encoding: true
+    language: !Languages 
+      default:
+        name: $host
+        description: server parameter
+        serializedName: $host
+    protocol: !Protocols 
+      http: !HttpParameter 
+        in: uri
+operationGroups:
+  - !OperationGroup 
+    $key: ''
+    operations:
+      - !Operation 
+        apiVersions:
+          - !ApiVersion 
+            version: 1.0.0
+        parameters:
+          - *ref_23
+        requests:
+          - !Request 
+            parameters:
+              - !Parameter 
+                schema: *ref_24
+                implementation: Method
+                origin: modelerfour:synthesized/content-type
+                required: true
+                language: !Languages 
+                  default:
+                    name: contentType
+                    description: Body Parameter content-type
+                    serializedName: Content-Type
+                protocol: !Protocols 
+                  http: !HttpParameter 
+                    in: header
+              - !Parameter &ref_25
+                schema: *ref_5
+                implementation: Method
+                isPartialBody: true
+                language: !Languages 
+                  default:
+                    name: boolProp
+                    serializedName: boolProp
+                protocol: !Protocols 
+                  http: !HttpParameter 
+                    in: body
+              - !Parameter &ref_26
+                schema: *ref_6
+                implementation: Method
+                isPartialBody: true
+                language: !Languages 
+                  default:
+                    name: intProp
+                    serializedName: intProp
+                protocol: !Protocols 
+                  http: !HttpParameter 
+                    in: body
+              - !Parameter &ref_27
+                schema: *ref_7
+                implementation: Method
+                isPartialBody: true
+                language: !Languages 
+                  default:
+                    name: numberInt32Prop
+                    serializedName: numberInt32Prop
+                protocol: !Protocols 
+                  http: !HttpParameter 
+                    in: body
+              - !Parameter &ref_28
+                schema: *ref_8
+                implementation: Method
+                isPartialBody: true
+                language: !Languages 
+                  default:
+                    name: numberInt64Prop
+                    serializedName: numberInt64Prop
+                protocol: !Protocols 
+                  http: !HttpParameter 
+                    in: body
+              - !Parameter &ref_29
+                schema: *ref_9
+                implementation: Method
+                isPartialBody: true
+                language: !Languages 
+                  default:
+                    name: numberFloatProp
+                    serializedName: numberFloatProp
+                protocol: !Protocols 
+                  http: !HttpParameter 
+                    in: body
+              - !Parameter &ref_30
+                schema: *ref_10
+                implementation: Method
+                isPartialBody: true
+                language: !Languages 
+                  default:
+                    name: numberDoubleProp
+                    serializedName: numberDoubleProp
+                protocol: !Protocols 
+                  http: !HttpParameter 
+                    in: body
+              - !Parameter &ref_31
+                schema: *ref_11
+                implementation: Method
+                isPartialBody: true
+                language: !Languages 
+                  default:
+                    name: dateProp
+                    serializedName: dateProp
+                protocol: !Protocols 
+                  http: !HttpParameter 
+                    in: body
+              - !Parameter &ref_32
+                schema: *ref_12
+                implementation: Method
+                isPartialBody: true
+                language: !Languages 
+                  default:
+                    name: datetimeProp
+                    serializedName: datetimeProp
+                protocol: !Protocols 
+                  http: !HttpParameter 
+                    in: body
+              - !Parameter &ref_33
+                schema: *ref_13
+                implementation: Method
+                isPartialBody: true
+                language: !Languages 
+                  default:
+                    name: datetimeRfc1123Prop
+                    serializedName: datetimeRfc1123Prop
+                protocol: !Protocols 
+                  http: !HttpParameter 
+                    in: body
+              - !Parameter &ref_34
+                schema: *ref_14
+                implementation: Method
+                isPartialBody: true
+                language: !Languages 
+                  default:
+                    name: uuidProp
+                    serializedName: uuidProp
+                protocol: !Protocols 
+                  http: !HttpParameter 
+                    in: body
+              - !Parameter &ref_35
+                schema: *ref_15
+                implementation: Method
+                isPartialBody: true
+                language: !Languages 
+                  default:
+                    name: urlProp
+                    serializedName: urlProp
+                protocol: !Protocols 
+                  http: !HttpParameter 
+                    in: body
+              - !Parameter &ref_36
+                schema: *ref_16
+                implementation: Method
+                isPartialBody: true
+                language: !Languages 
+                  default:
+                    name: objProp
+                    serializedName: objProp
+                protocol: !Protocols 
+                  http: !HttpParameter 
+                    in: body
+              - !Parameter &ref_37
+                schema: *ref_17
+                implementation: Method
+                isPartialBody: true
+                language: !Languages 
+                  default:
+                    name: fileName1
+                    serializedName: fileName1
+                protocol: !Protocols 
+                  http: !HttpParameter 
+                    in: body
+              - !Parameter &ref_38
+                schema: *ref_18
+                implementation: Method
+                isPartialBody: true
+                language: !Languages 
+                  default:
+                    name: fileName2
+                    serializedName: fileName2
+                protocol: !Protocols 
+                  http: !HttpParameter 
+                    in: body
+              - !Parameter &ref_39
+                schema: *ref_21
+                implementation: Method
+                isPartialBody: true
+                language: !Languages 
+                  default:
+                    name: arrayOfDatetimeProp
+                    serializedName: arrayOfDatetimeProp
+                protocol: !Protocols 
+                  http: !HttpParameter 
+                    in: body
+              - !Parameter &ref_40
+                schema: *ref_22
+                implementation: Method
+                isPartialBody: true
+                language: !Languages 
+                  default:
+                    name: arrayOfObjProp
+                    serializedName: arrayOfObjProp
+                protocol: !Protocols 
+                  http: !HttpParameter 
+                    in: body
+            signatureParameters:
+              - *ref_25
+              - *ref_26
+              - *ref_27
+              - *ref_28
+              - *ref_29
+              - *ref_30
+              - *ref_31
+              - *ref_32
+              - *ref_33
+              - *ref_34
+              - *ref_35
+              - *ref_36
+              - *ref_37
+              - *ref_38
+              - *ref_39
+              - *ref_40
+            language: !Languages 
+              default:
+                name: ''
+                description: ''
+            protocol: !Protocols 
+              http: !HttpMultipartRequest 
+                path: /multipart/
+                method: post
+                knownMediaType: multipart
+                mediaTypes:
+                  - multipart/form-data
+                multipart: true
+                uri: '{$host}'
+        signatureParameters: []
+        responses:
+          - !Response 
+            language: !Languages 
+              default:
+                name: ''
+                description: Operation succeeded.
+            protocol: !Protocols 
+              http: !HttpResponse 
+                statusCodes:
+                  - '200'
+        language: !Languages 
+          default:
+            name: Operation
+            description: ''
+        protocol: !Protocols {}
+    language: !Languages 
+      default:
+        name: ''
+        description: ''
+    protocol: !Protocols {}
+security: !Security 
+  authenticationRequired: false
+  schemes: []
+language: !Languages 
+  default:
+    name: Multipart
+    description: ''
+protocol: !Protocols 
+  http: !HttpModel {}

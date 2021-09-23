@@ -26,7 +26,6 @@ namespace AutoRest.CSharp.Output.Models.Types
 
         private readonly ModelTypeMapping? _sourceTypeMapping;
         private ObjectTypeProperty? _additionalPropertiesProperty;
-        private ObjectSerialization[]? _serializations;
         private CSharpType? _implementsDictionaryType;
         private ObjectTypeDiscriminator? _discriminator;
 
@@ -44,6 +43,7 @@ namespace AutoRest.CSharp.Output.Models.Types
 
             DefaultNamespace = GetDefaultNamespace(objectSchema.Extensions?.Namespace, context);
             _sourceTypeMapping = context.SourceInputModel?.CreateForModel(ExistingType);
+            Serializations = new CachedDictionary<KnownMediaType, ObjectSerialization>(BuildSerializations);
 
             // Update usage from code attribute
             if (_sourceTypeMapping?.Usage != null)
@@ -63,7 +63,8 @@ namespace AutoRest.CSharp.Output.Models.Types
         protected override TypeKind TypeKind => IsStruct ? TypeKind.Struct : TypeKind.Class;
         public bool IsStruct => ExistingType?.IsValueType == true;
 
-        public ObjectSerialization[] Serializations => _serializations ??= BuildSerializations();
+        public CachedDictionary<KnownMediaType, ObjectSerialization> Serializations { get; }
+
         public ObjectTypeDiscriminator? Discriminator => _discriminator ??= BuildDiscriminator();
 
         public bool IsAbstract => ObjectSchema != null &&
@@ -314,7 +315,7 @@ namespace AutoRest.CSharp.Output.Models.Types
             );
         }
 
-        private ObjectSerialization[] BuildSerializations()
+        private Dictionary<KnownMediaType, ObjectSerialization> BuildSerializations()
         {
             var formats = ObjectSchema.SerializationFormats;
 
@@ -333,7 +334,10 @@ namespace AutoRest.CSharp.Output.Models.Types
                     formats.Add(Enum.Parse<KnownMediaType>(format, true));
                 }
             }
-            return formats.Distinct().Select(type => _serializationBuilder.BuildObject(type, ObjectSchema, this)).ToArray();
+
+            return formats
+                .Distinct()
+                .ToDictionary(type => type, type => _serializationBuilder.BuildObject(type, ObjectSchema, this));
         }
 
         private ObjectTypeDiscriminatorImplementation[] CreateDiscriminatorImplementations(Discriminator schemaDiscriminator)

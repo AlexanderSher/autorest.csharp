@@ -46,7 +46,7 @@ namespace body_formdata
             request.Headers.Add("Content-Type", "multipart/form-data");
             var content = new MultipartFormDataContent();
             content.Add(RequestContent.Create(fileContent), "fileContent", null);
-            content.Add(new StringRequestContent(fileName), "fileName", null);
+            content.Add(new StringRequestContent(fileName), "fileName", new Dictionary<string, string> { { "Content-Type", "text/plain" } });
             content.ApplyToRequest(request);
             return message;
         }

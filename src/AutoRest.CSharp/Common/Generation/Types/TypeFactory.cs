@@ -123,6 +123,28 @@ namespace AutoRest.CSharp.Generation.Types
             throw new NotSupportedException(type.Name);
         }
 
+        public static bool IsListOfPrimitiveType(CSharpType type)
+            => IsList(type) && IsPrimitiveType(type.Arguments[0]);
+
+        public static bool IsPrimitiveType(CSharpType type)
+            => IsDateTimeType(type) ||
+               IsNumericType(type) ||
+               type.Equals(typeof(bool)) ||
+               type.Equals(typeof(char)) ||
+               type.Equals(typeof(Guid)) ||
+               type.Equals(typeof(string)) ||
+               type.Equals(typeof(Uri));
+
+        public static bool IsDateTimeType(CSharpType type)
+            => type.Equals(typeof(DateTimeOffset)) || type.Equals(typeof(TimeSpan));
+
+        public static bool IsNumericType(CSharpType type)
+            => type.Equals(typeof(decimal)) ||
+               type.Equals(typeof(double)) ||
+               type.Equals(typeof(float)) ||
+               type.Equals(typeof(int)) ||
+               type.Equals(typeof(long));
+
         internal static bool IsDictionary(CSharpType type)
             => IsReadOnlyDictionary(type) || IsReadWriteDictionary(type);
 

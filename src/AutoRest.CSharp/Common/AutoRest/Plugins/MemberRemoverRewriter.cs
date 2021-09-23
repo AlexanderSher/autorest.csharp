@@ -48,13 +48,37 @@ namespace AutoRest.CSharp.AutoRest.Plugins
         }
 
         public override SyntaxNode? VisitClassDeclaration(ClassDeclarationSyntax node)
-            => IsSuppressedType(node) ? null : base.VisitClassDeclaration(node);
+        {
+            if (IsSuppressedType(node))
+            {
+                return null;
+            }
+
+            var visitedNode = base.VisitClassDeclaration(node);
+            return visitedNode is ClassDeclarationSyntax td && !td.Members.Any() ? null : visitedNode;
+        }
 
         public override SyntaxNode? VisitStructDeclaration(StructDeclarationSyntax node)
-            => IsSuppressedType(node) ? null : base.VisitStructDeclaration(node);
+        {
+            if (IsSuppressedType(node))
+            {
+                return null;
+            }
+
+            var visitedNode = base.VisitStructDeclaration(node);
+            return visitedNode is StructDeclarationSyntax td && !td.Members.Any() ? null : visitedNode;
+        }
 
         public override SyntaxNode? VisitEnumDeclaration(EnumDeclarationSyntax node)
-            => IsSuppressedType(node) ? null : base.VisitEnumDeclaration(node);
+        {
+            if (IsSuppressedType(node))
+            {
+                return null;
+            }
+
+            var visitedNode = base.VisitEnumDeclaration(node);
+            return visitedNode is EnumDeclarationSyntax td && !td.Members.Any() ? null : visitedNode;
+        }
 
         public override SyntaxNode? VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {

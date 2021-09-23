@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Xml;
 using System.Xml.Linq;
+using AutoRest.CSharp.Input;
 using AutoRest.CSharp.Output.Models.Serialization.Json;
 using AutoRest.CSharp.Output.Models.Serialization.Xml;
 using AutoRest.CSharp.Output.Models.Types;
@@ -23,7 +24,7 @@ namespace AutoRest.CSharp.Generation.Writers
                 case SchemaObjectType objectSchema:
                     WriteObjectSerialization(writer, objectSchema);
                     break;
-                case EnumType sealedChoiceSchema when !sealedChoiceSchema.IsExtendable:
+                case EnumType { IsExtendable: false } sealedChoiceSchema:
                     WriteSealedChoiceSerialization(writer, sealedChoiceSchema);
                     break;
             }
@@ -42,19 +43,16 @@ namespace AutoRest.CSharp.Generation.Writers
                 {
                     writer.Append($"[{typeof(JsonConverter)}(typeof({model.Declaration.Name}Converter))]");
                 }
-                if (model.IsStruct)
-                {
-                    writer.Append($"{model.Declaration.Accessibility} partial struct {model.Declaration.Name}");
-                }
-                else
-                {
-                    writer.Append($"{model.Declaration.Accessibility} partial class {model.Declaration.Name}");
-                }
+
+                writer.Append($"{model.Declaration.Accessibility} partial {(model.IsStruct ? "struct" : "class")} {model.Declaration.Name}");
+
+                bool hasJson = false;
+                bool hasXml = false;
 
                 if (model.IncludeSerializer)
                 {
-                    bool hasJson = model.Serializations.OfType<JsonSerialization>().Any();
-                    bool hasXml = model.Serializations.OfType<XmlElementSerialization>().Any();
+                    hasJson = model.Serializations.ContainsKey(KnownMediaType.Json);
+                    hasXml = model.Serializations.ContainsKey(KnownMediaType.Xml);
                     if (hasJson || hasXml)
                     {
                         writer.Append($": ");
@@ -77,36 +75,31 @@ namespace AutoRest.CSharp.Generation.Writers
 
                 using (writer.Scope())
                 {
-                    foreach (var serialization in model.Serializations)
+                    if (hasJson)
                     {
-                        switch (serialization)
+                        var jsonSerialization = (JsonSerialization)model.Serializations[KnownMediaType.Json];
+                        if (model.IncludeSerializer)
                         {
-                            case JsonSerialization jsonSerialization:
-                                if (model.IncludeSerializer)
-                                {
-                                    WriteJsonSerialize(writer, jsonSerialization);
-                                }
+                            WriteJsonSerialize(writer, jsonSerialization);
+                        }
 
-                                if (model.IncludeDeserializer)
-                                {
-                                    WriteJsonDeserialize(writer, model, jsonSerialization);
-                                }
+                        if (model.IncludeDeserializer)
+                        {
+                            WriteJsonDeserialize(writer, model, jsonSerialization);
+                        }
+                    }
 
-                                break;
-                            case XmlElementSerialization xmlSerialization:
-                                if (model.IncludeSerializer)
-                                {
-                                    WriteXmlSerialize(writer, xmlSerialization);
-                                }
+                    if (hasXml)
+                    {
+                        var xmlSerialization = (XmlElementSerialization)model.Serializations[KnownMediaType.Xml];
+                        if (model.IncludeSerializer)
+                        {
+                            WriteXmlSerialize(writer, xmlSerialization);
+                        }
 
-                                if (model.IncludeDeserializer)
-                                {
-                                    WriteXmlDeserialize(writer, model, xmlSerialization);
-                                }
-
-                                break;
-                            default:
-                                throw new NotImplementedException(serialization.ToString());
+                        if (model.IncludeDeserializer)
+                        {
+                            WriteXmlDeserialize(writer, model, xmlSerialization);
                         }
                     }
 

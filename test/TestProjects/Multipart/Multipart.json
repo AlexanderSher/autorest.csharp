@@ -1,0 +1,121 @@
+﻿{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "AutoRest Multipart Request",
+    "description": "Test Infrastructure for AutoRest",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/multipart/": {
+      "post": {
+        "operationId": "Operation", 
+        "servers": [
+          {
+           "url": "http://localhost:3000/"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "boolProp": {
+                    "type": "boolean"
+                  },
+                  "intProp":{
+                    "type": "integer"
+                  },
+                  "numberInt32Prop":{ 
+                    "type": "number",
+                    "format": "int32"
+                  },
+                  "numberInt64Prop":{ 
+                    "type": "number",
+                    "format": "int64"
+                  },
+                  "numberFloatProp":{ 
+                    "type": "number",
+                    "format": "float"
+                  },
+                  "numberDoubleProp":{ 
+                    "type": "number",
+                    "format": "double"
+                  },
+                  "dateProp":{ 
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "datetimeProp":{ 
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "datetimeRfc1123Prop":{ 
+                    "type": "string",
+                    "format": "date-time-rfc1123"
+                  },
+                  "uuidProp":{ 
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "urlProp":{ 
+                    "type": "string",
+                    "format": "url"
+                  },
+                  "objProp":{
+                    "type": "object",
+                    "properties": {
+                      "nestedInt": {
+                        "type": "integer"
+                      },
+                      "nestedDate":{
+                        "type": "string",
+                        "format": "date"
+                      }
+                    }
+                  },
+                  "fileName1":{ 
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "fileName2":{ 
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "arrayOfDatetimeProp": {
+                    "type": "array",
+                    "items" :{ 
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  },
+                  "arrayOfObjProp": {
+                    "type": "array",
+                    "items" :{ 
+                      "type": "object",
+                      "properties": {
+                        "nestedUuid": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "nestedString":{
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation succeeded."
+          }
+        }
+      } 
+    }
+  }  
+}

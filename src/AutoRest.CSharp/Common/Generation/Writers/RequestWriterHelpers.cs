@@ -127,9 +127,9 @@ namespace AutoRest.CSharp.Generation.Writers
                                 case TextRequestBody textBody:
                                     using (WriteValueNullCheck(writer, textBody.Value))
                                     {
-                                        writer.Append($"{multipartContent}.Add(new {typeof(StringRequestContent)}(");
+                                        writer.Append($"{multipartContent}.AddPart({bodyParameter.Name:L}, ");
                                         WriteConstantOrParameter(writer, textBody.Value);
-                                        writer.Line($"), {bodyParameter.Name:L}, null);");
+                                        writer.Line($");");
                                     }
                                     break;
                                 case BinaryCollectionRequestBody collectionBody:
@@ -138,6 +138,9 @@ namespace AutoRest.CSharp.Generation.Writers
                                     {
                                         writer.Append($"{multipartContent}.Add({typeof(RequestContent)}.Create({collectionItemVariable}), {bodyParameter.Name:L}, null);");
                                     }
+                                    break;
+                                case SchemaRequestBody schemaBody:
+                                    writer.Line($"// here should be serialization for {schemaBody.Value}");
                                     break;
                                 default:
                                     throw new NotImplementedException(bodyParameter.Content?.GetType().FullName);
