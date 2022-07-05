@@ -402,14 +402,14 @@ namespace AutoRest.CSharp.Generation.Writers
                     var nextPageMethod = lroMethod.Operation.NextPageMethod;
                     if (nextPageMethod != null)
                     {
-                        writer.Append($", nextLink => RestClient.{CreateMethodName(nextPageMethod.Name, true)}(nextLink, ");
+                        writer.Append($", (nextLink, ct) => RestClient.{CreateMethodName(nextPageMethod.Name, true)}(nextLink, ");
 
                         foreach (Parameter parameter in parameters)
                         {
                             writer.Append($"{parameter.Name}, ");
                         }
 
-                        writer.Append($"cancellationToken)");
+                        writer.Append($"ct)");
                     }
 
                     writer.Line($");");

@@ -15,7 +15,7 @@ using Azure.Core.Pipeline;
 
 namespace CustomNamespace
 {
-    internal partial class MainOperation : Operation<CustomizedModel>, IOperationSource<CustomizedModel>
+    internal partial class MainOperation : Operation<CustomizedModel>
     {
         private readonly OperationInternal<CustomizedModel> _operation;
 
@@ -26,7 +26,7 @@ namespace CustomNamespace
 
         internal MainOperation(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, Request request, Response response)
         {
-            IOperation<CustomizedModel> nextLinkOperation = NextLinkOperationImplementation.Create(this, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.Location);
+            IOperation<CustomizedModel> nextLinkOperation = NextLinkOperationImplementation.Create(CreateResultAsync, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.Location);
             _operation = new OperationInternal<CustomizedModel>(clientDiagnostics, nextLinkOperation, response, "MainOperation");
         }
 
@@ -65,15 +65,9 @@ namespace CustomNamespace
         /// <inheritdoc />
         public override ValueTask<Response<CustomizedModel>> WaitForCompletionAsync(TimeSpan pollingInterval, CancellationToken cancellationToken = default) => _operation.WaitForCompletionAsync(pollingInterval, cancellationToken);
 
-        CustomizedModel IOperationSource<CustomizedModel>.CreateResult(Response response, CancellationToken cancellationToken)
+        private async ValueTask<CustomizedModel> CreateResultAsync(bool @async, Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            return CustomizedModel.DeserializeCustomizedModel(document.RootElement);
-        }
-
-        async ValueTask<CustomizedModel> IOperationSource<CustomizedModel>.CreateResultAsync(Response response, CancellationToken cancellationToken)
-        {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            using var document = async ? await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false) : JsonDocument.Parse(response.ContentStream);
             return CustomizedModel.DeserializeCustomizedModel(document.RootElement);
         }
     }

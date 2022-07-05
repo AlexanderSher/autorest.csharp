@@ -17,7 +17,7 @@ using Azure.Network.Management.Interface.Models;
 namespace Azure.Network.Management.Interface
 {
     /// <summary> Creates or updates a network interface. </summary>
-    public partial class NetworkInterfacesCreateOrUpdateOperation : Operation<NetworkInterface>, IOperationSource<NetworkInterface>
+    public partial class NetworkInterfacesCreateOrUpdateOperation : Operation<NetworkInterface>
     {
         private readonly OperationInternal<NetworkInterface> _operation;
 
@@ -28,7 +28,7 @@ namespace Azure.Network.Management.Interface
 
         internal NetworkInterfacesCreateOrUpdateOperation(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, Request request, Response response)
         {
-            IOperation<NetworkInterface> nextLinkOperation = NextLinkOperationImplementation.Create(this, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.AzureAsyncOperation);
+            IOperation<NetworkInterface> nextLinkOperation = NextLinkOperationImplementation.Create(CreateResultAsync, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.AzureAsyncOperation);
             _operation = new OperationInternal<NetworkInterface>(clientDiagnostics, nextLinkOperation, response, "NetworkInterfacesCreateOrUpdateOperation");
         }
 
@@ -67,15 +67,9 @@ namespace Azure.Network.Management.Interface
         /// <inheritdoc />
         public override ValueTask<Response<NetworkInterface>> WaitForCompletionAsync(TimeSpan pollingInterval, CancellationToken cancellationToken = default) => _operation.WaitForCompletionAsync(pollingInterval, cancellationToken);
 
-        NetworkInterface IOperationSource<NetworkInterface>.CreateResult(Response response, CancellationToken cancellationToken)
+        private async ValueTask<NetworkInterface> CreateResultAsync(bool @async, Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            return NetworkInterface.DeserializeNetworkInterface(document.RootElement);
-        }
-
-        async ValueTask<NetworkInterface> IOperationSource<NetworkInterface>.CreateResultAsync(Response response, CancellationToken cancellationToken)
-        {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            using var document = async ? await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false) : JsonDocument.Parse(response.ContentStream);
             return NetworkInterface.DeserializeNetworkInterface(document.RootElement);
         }
     }

@@ -16,7 +16,7 @@ using Azure.Core.Pipeline;
 namespace lro_parameterized_endpoints
 {
     /// <summary> Poll with method and client level parameters in endpoint. </summary>
-    public partial class LROWithParamaterizedEndpointsPollWithParameterizedEndpointsOperation : Operation<string>, IOperationSource<string>
+    public partial class LROWithParamaterizedEndpointsPollWithParameterizedEndpointsOperation : Operation<string>
     {
         private readonly OperationInternal<string> _operation;
 
@@ -27,7 +27,7 @@ namespace lro_parameterized_endpoints
 
         internal LROWithParamaterizedEndpointsPollWithParameterizedEndpointsOperation(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, Request request, Response response)
         {
-            IOperation<string> nextLinkOperation = NextLinkOperationImplementation.Create(this, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.Location);
+            IOperation<string> nextLinkOperation = NextLinkOperationImplementation.Create(CreateResultAsync, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.Location);
             _operation = new OperationInternal<string>(clientDiagnostics, nextLinkOperation, response, "LROWithParamaterizedEndpointsPollWithParameterizedEndpointsOperation");
         }
 
@@ -66,15 +66,9 @@ namespace lro_parameterized_endpoints
         /// <inheritdoc />
         public override ValueTask<Response<string>> WaitForCompletionAsync(TimeSpan pollingInterval, CancellationToken cancellationToken = default) => _operation.WaitForCompletionAsync(pollingInterval, cancellationToken);
 
-        string IOperationSource<string>.CreateResult(Response response, CancellationToken cancellationToken)
+        private async ValueTask<string> CreateResultAsync(bool @async, Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            return document.RootElement.GetString();
-        }
-
-        async ValueTask<string> IOperationSource<string>.CreateResultAsync(Response response, CancellationToken cancellationToken)
-        {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            using var document = async ? await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false) : JsonDocument.Parse(response.ContentStream);
             return document.RootElement.GetString();
         }
     }

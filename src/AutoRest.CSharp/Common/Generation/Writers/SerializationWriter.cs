@@ -194,7 +194,7 @@ namespace AutoRest.CSharp.Generation.Writers
                             {
                                 writer
                                     .Append($"case {implementation.Key:L}: return ")
-                                    .DeserializeImplementation(implementation.Type.Implementation, jsonSerialization, w => w.Append($"element"));
+                                    .DeserializeImplementation(implementation.Type.Implementation, jsonSerialization, $"element");
                                 writer.Line($";");
                             }
                         }
@@ -207,9 +207,7 @@ namespace AutoRest.CSharp.Generation.Writers
                 }
                 else
                 {
-                    writer.DeserializeValue(jsonSerialization,
-                        w => w.AppendRaw("element"),
-                        (w, v) => w.Line($"return {v};"));
+                    writer.DeserializeValue(jsonSerialization, $"element", (w, v) => w.Line($"return {v};"));
                 }
             }
             writer.Line();

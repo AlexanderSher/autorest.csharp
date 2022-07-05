@@ -422,16 +422,11 @@ namespace AutoRest.CSharp.Generation.Writers
             }
         }
 
-        public static void WriteDeserializationForMethods(this CodeWriter writer, XmlElementSerialization serialization,
-            Action<CodeWriter, CodeWriterDelegate> valueCallback, string response)
+        public static void WriteDeserializationForMethods(this CodeWriter writer, XmlElementSerialization serialization, Action<CodeWriter, CodeWriterDelegate> valueCallback, string response)
         {
             var document = new CodeWriterDeclaration("document");
             writer.Line($"var {document:D} = {typeof(XDocument)}.Load({response}.ContentStream, LoadOptions.PreserveWhitespace);");
-            writer.ToDeserializeCall(
-                serialization,
-                w => w.Append(document),
-                valueCallback
-            );
+            writer.ToDeserializeCall(serialization, w => w.Append(document), valueCallback);
         }
 
         private static void CollectProperties(Dictionary<ObjectTypeProperty, CodeWriterDeclaration> propertyVariables, XmlObjectSerialization element)

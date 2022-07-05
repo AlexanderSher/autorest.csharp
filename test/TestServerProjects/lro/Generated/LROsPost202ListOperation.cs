@@ -18,7 +18,7 @@ using lro.Models;
 namespace lro
 {
     /// <summary> Long running put request, service returns a 202 with empty body to first request, returns a 200 with body [{ &apos;id&apos;: &apos;100&apos;, &apos;name&apos;: &apos;foo&apos; }]. </summary>
-    public partial class LROsPost202ListOperation : Operation<IReadOnlyList<Product>>, IOperationSource<IReadOnlyList<Product>>
+    public partial class LROsPost202ListOperation : Operation<IReadOnlyList<Product>>
     {
         private readonly OperationInternal<IReadOnlyList<Product>> _operation;
 
@@ -29,7 +29,7 @@ namespace lro
 
         internal LROsPost202ListOperation(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, Request request, Response response)
         {
-            IOperation<IReadOnlyList<Product>> nextLinkOperation = NextLinkOperationImplementation.Create(this, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.Location);
+            IOperation<IReadOnlyList<Product>> nextLinkOperation = NextLinkOperationImplementation.Create(CreateResultAsync, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.Location);
             _operation = new OperationInternal<IReadOnlyList<Product>>(clientDiagnostics, nextLinkOperation, response, "LROsPost202ListOperation");
         }
 
@@ -68,20 +68,9 @@ namespace lro
         /// <inheritdoc />
         public override ValueTask<Response<IReadOnlyList<Product>>> WaitForCompletionAsync(TimeSpan pollingInterval, CancellationToken cancellationToken = default) => _operation.WaitForCompletionAsync(pollingInterval, cancellationToken);
 
-        IReadOnlyList<Product> IOperationSource<IReadOnlyList<Product>>.CreateResult(Response response, CancellationToken cancellationToken)
+        private async ValueTask<IReadOnlyList<Product>> CreateResultAsync(bool @async, Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            List<Product> array = new List<Product>();
-            foreach (var item in document.RootElement.EnumerateArray())
-            {
-                array.Add(Product.DeserializeProduct(item));
-            }
-            return array;
-        }
-
-        async ValueTask<IReadOnlyList<Product>> IOperationSource<IReadOnlyList<Product>>.CreateResultAsync(Response response, CancellationToken cancellationToken)
-        {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            using var document = async ? await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false) : JsonDocument.Parse(response.ContentStream);
             List<Product> array = new List<Product>();
             foreach (var item in document.RootElement.EnumerateArray())
             {

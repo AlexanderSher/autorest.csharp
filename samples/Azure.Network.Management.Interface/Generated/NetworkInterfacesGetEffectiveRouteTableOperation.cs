@@ -17,7 +17,7 @@ using Azure.Network.Management.Interface.Models;
 namespace Azure.Network.Management.Interface
 {
     /// <summary> Gets all route tables applied to a network interface. </summary>
-    public partial class NetworkInterfacesGetEffectiveRouteTableOperation : Operation<EffectiveRouteListResult>, IOperationSource<EffectiveRouteListResult>
+    public partial class NetworkInterfacesGetEffectiveRouteTableOperation : Operation<EffectiveRouteListResult>
     {
         private readonly OperationInternal<EffectiveRouteListResult> _operation;
 
@@ -28,7 +28,7 @@ namespace Azure.Network.Management.Interface
 
         internal NetworkInterfacesGetEffectiveRouteTableOperation(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, Request request, Response response)
         {
-            IOperation<EffectiveRouteListResult> nextLinkOperation = NextLinkOperationImplementation.Create(this, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.Location);
+            IOperation<EffectiveRouteListResult> nextLinkOperation = NextLinkOperationImplementation.Create(CreateResultAsync, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.Location);
             _operation = new OperationInternal<EffectiveRouteListResult>(clientDiagnostics, nextLinkOperation, response, "NetworkInterfacesGetEffectiveRouteTableOperation");
         }
 
@@ -67,15 +67,9 @@ namespace Azure.Network.Management.Interface
         /// <inheritdoc />
         public override ValueTask<Response<EffectiveRouteListResult>> WaitForCompletionAsync(TimeSpan pollingInterval, CancellationToken cancellationToken = default) => _operation.WaitForCompletionAsync(pollingInterval, cancellationToken);
 
-        EffectiveRouteListResult IOperationSource<EffectiveRouteListResult>.CreateResult(Response response, CancellationToken cancellationToken)
+        private async ValueTask<EffectiveRouteListResult> CreateResultAsync(bool @async, Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            return EffectiveRouteListResult.DeserializeEffectiveRouteListResult(document.RootElement);
-        }
-
-        async ValueTask<EffectiveRouteListResult> IOperationSource<EffectiveRouteListResult>.CreateResultAsync(Response response, CancellationToken cancellationToken)
-        {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            using var document = async ? await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false) : JsonDocument.Parse(response.ContentStream);
             return EffectiveRouteListResult.DeserializeEffectiveRouteListResult(document.RootElement);
         }
     }

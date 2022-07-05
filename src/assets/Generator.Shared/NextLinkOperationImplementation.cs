@@ -47,10 +47,20 @@ namespace Azure.Core
             return new NextLinkOperationImplementation(pipeline, requestMethod, startRequestUri, nextRequestUri, headerSource, originalResponseHasLocation, lastKnownLocation, finalStateVia, apiVersionStr);
         }
 
-        public static IOperation<T> Create<T>(IOperationSource<T> operationSource, HttpPipeline pipeline, RequestMethod requestMethod, Uri startRequestUri, Response response, OperationFinalStateVia finalStateVia)
+        public static IOperation<T> Create<T>(Func<bool, Response, CancellationToken, ValueTask<T>> resultSelector, HttpPipeline pipeline, RequestMethod requestMethod, Uri startRequestUri, Response response, OperationFinalStateVia finalStateVia)
         {
             var operation = Create(pipeline, requestMethod, startRequestUri, response, finalStateVia);
-            return new OperationToOperationOfT<T>(operationSource, operation);
+            return new OperationToOperationOfT<T>(operation, resultSelector);
+        }
+
+        public static IOperation<T> Create<T>(IOperationSource<T> operationSource, HttpPipeline pipeline, RequestMethod requestMethod, Uri startRequestUri, Response response, OperationFinalStateVia finalStateVia)
+        {
+            return Create(ResultSelector, pipeline, requestMethod, startRequestUri, response, finalStateVia);
+
+            async ValueTask<T> ResultSelector(bool async, Response r, CancellationToken ct)
+                => async
+                    ? await operationSource.CreateResultAsync(r, ct).ConfigureAwait(false)
+                    : operationSource.CreateResult(r, ct);
         }
 
         private NextLinkOperationImplementation(HttpPipeline pipeline, RequestMethod requestMethod, Uri startRequestUri, string nextRequestUri, HeaderSource headerSource, bool originalResponseHasLocation, string? lastKnownLocation, OperationFinalStateVia finalStateVia, string? apiVersion)
@@ -363,13 +373,13 @@ namespace Azure.Core
 
         private sealed class OperationToOperationOfT<T> : IOperation<T>
         {
-            private readonly IOperationSource<T> _operationSource;
             private readonly IOperation _operation;
+            private readonly Func<bool, Response, CancellationToken, ValueTask<T>> _resultSelector;
 
-            public OperationToOperationOfT(IOperationSource<T> operationSource, IOperation operation)
+            public OperationToOperationOfT(IOperation operation, Func<bool, Response, CancellationToken, ValueTask<T>> resultSelector)
             {
-                _operationSource = operationSource;
                 _operation = operation;
+                _resultSelector = resultSelector;
             }
 
             public async ValueTask<OperationState<T>> UpdateStateAsync(bool async, CancellationToken cancellationToken)
@@ -377,10 +387,7 @@ namespace Azure.Core
                 var state = await _operation.UpdateStateAsync(async, cancellationToken).ConfigureAwait(false);
                 if (state.HasSucceeded)
                 {
-                    var result = async
-                        ? await _operationSource.CreateResultAsync(state.RawResponse, cancellationToken).ConfigureAwait(false)
-                        : _operationSource.CreateResult(state.RawResponse, cancellationToken);
-
+                    var result = await _resultSelector(async, state.RawResponse, cancellationToken).ConfigureAwait(false);
                     return OperationState<T>.Success(state.RawResponse, result);
                 }
 

@@ -17,7 +17,7 @@ using lro.Models;
 namespace lro
 {
     /// <summary> Long running put request with sub resource. </summary>
-    public partial class LROsPutSubResourceOperation : Operation<SubProduct>, IOperationSource<SubProduct>
+    public partial class LROsPutSubResourceOperation : Operation<SubProduct>
     {
         private readonly OperationInternal<SubProduct> _operation;
 
@@ -28,7 +28,7 @@ namespace lro
 
         internal LROsPutSubResourceOperation(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, Request request, Response response)
         {
-            IOperation<SubProduct> nextLinkOperation = NextLinkOperationImplementation.Create(this, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.Location);
+            IOperation<SubProduct> nextLinkOperation = NextLinkOperationImplementation.Create(CreateResultAsync, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.Location);
             _operation = new OperationInternal<SubProduct>(clientDiagnostics, nextLinkOperation, response, "LROsPutSubResourceOperation");
         }
 
@@ -67,15 +67,9 @@ namespace lro
         /// <inheritdoc />
         public override ValueTask<Response<SubProduct>> WaitForCompletionAsync(TimeSpan pollingInterval, CancellationToken cancellationToken = default) => _operation.WaitForCompletionAsync(pollingInterval, cancellationToken);
 
-        SubProduct IOperationSource<SubProduct>.CreateResult(Response response, CancellationToken cancellationToken)
+        private async ValueTask<SubProduct> CreateResultAsync(bool @async, Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            return SubProduct.DeserializeSubProduct(document.RootElement);
-        }
-
-        async ValueTask<SubProduct> IOperationSource<SubProduct>.CreateResultAsync(Response response, CancellationToken cancellationToken)
-        {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            using var document = async ? await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false) : JsonDocument.Parse(response.ContentStream);
             return SubProduct.DeserializeSubProduct(document.RootElement);
         }
     }

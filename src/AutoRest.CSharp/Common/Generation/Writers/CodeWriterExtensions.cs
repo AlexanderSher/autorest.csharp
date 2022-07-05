@@ -341,13 +341,27 @@ namespace AutoRest.CSharp.Generation.Writers
 
         public static CodeWriter WriteConstant(this CodeWriter writer, Constant constant) => writer.Append(constant.GetConstantFormattable());
 
-        public static void WriteDeserializationForMethods(this CodeWriter writer, ObjectSerialization serialization, bool async,
-            Action<CodeWriter, CodeWriterDelegate> valueCallback, string responseVariable, CSharpType? type)
+        public static void WriteDeserializationForMethods(this CodeWriter writer, ObjectSerialization serialization, bool async, Action<CodeWriter, CodeWriterDelegate> valueCallback, string responseVariable, CSharpType? type)
         {
             switch (serialization)
             {
                 case JsonSerialization jsonSerialization:
                     writer.WriteDeserializationForMethods(jsonSerialization, async, valueCallback, responseVariable, type is not null && type.Equals(typeof(BinaryData)));
+                    break;
+                case XmlElementSerialization xmlSerialization:
+                    writer.WriteDeserializationForMethods(xmlSerialization, valueCallback, responseVariable);
+                    break;
+                default:
+                    throw new NotImplementedException(serialization.ToString());
+            }
+        }
+
+        public static void WriteDeserializationForMethods(this CodeWriter writer, ObjectSerialization serialization, Action<CodeWriter, CodeWriterDelegate> valueCallback, string responseVariable, CSharpType? type)
+        {
+            switch (serialization)
+            {
+                case JsonSerialization jsonSerialization:
+                    writer.WriteDeserializationForMethods(jsonSerialization, valueCallback, responseVariable, type is not null && type.Equals(typeof(BinaryData)));
                     break;
                 case XmlElementSerialization xmlSerialization:
                     writer.WriteDeserializationForMethods(xmlSerialization, valueCallback, responseVariable);

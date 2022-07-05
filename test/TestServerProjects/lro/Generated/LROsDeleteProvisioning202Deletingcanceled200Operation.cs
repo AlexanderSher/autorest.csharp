@@ -17,7 +17,7 @@ using lro.Models;
 namespace lro
 {
     /// <summary> Long running delete request, service returns a 202 to the initial request, with an entity that contains ProvisioningState=’Creating’.  Polls return this value until the last poll returns a ‘200’ with ProvisioningState=’Canceled’. </summary>
-    public partial class LROsDeleteProvisioning202Deletingcanceled200Operation : Operation<Product>, IOperationSource<Product>
+    public partial class LROsDeleteProvisioning202Deletingcanceled200Operation : Operation<Product>
     {
         private readonly OperationInternal<Product> _operation;
 
@@ -28,7 +28,7 @@ namespace lro
 
         internal LROsDeleteProvisioning202Deletingcanceled200Operation(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, Request request, Response response)
         {
-            IOperation<Product> nextLinkOperation = NextLinkOperationImplementation.Create(this, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.Location);
+            IOperation<Product> nextLinkOperation = NextLinkOperationImplementation.Create(CreateResultAsync, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.Location);
             _operation = new OperationInternal<Product>(clientDiagnostics, nextLinkOperation, response, "LROsDeleteProvisioning202Deletingcanceled200Operation");
         }
 
@@ -67,15 +67,9 @@ namespace lro
         /// <inheritdoc />
         public override ValueTask<Response<Product>> WaitForCompletionAsync(TimeSpan pollingInterval, CancellationToken cancellationToken = default) => _operation.WaitForCompletionAsync(pollingInterval, cancellationToken);
 
-        Product IOperationSource<Product>.CreateResult(Response response, CancellationToken cancellationToken)
+        private async ValueTask<Product> CreateResultAsync(bool @async, Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            return Product.DeserializeProduct(document.RootElement);
-        }
-
-        async ValueTask<Product> IOperationSource<Product>.CreateResultAsync(Response response, CancellationToken cancellationToken)
-        {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            using var document = async ? await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false) : JsonDocument.Parse(response.ContentStream);
             return Product.DeserializeProduct(document.RootElement);
         }
     }

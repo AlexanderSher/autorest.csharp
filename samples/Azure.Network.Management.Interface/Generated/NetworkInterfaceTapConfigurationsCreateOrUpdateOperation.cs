@@ -17,7 +17,7 @@ using Azure.Network.Management.Interface.Models;
 namespace Azure.Network.Management.Interface
 {
     /// <summary> Creates or updates a Tap configuration in the specified NetworkInterface. </summary>
-    public partial class NetworkInterfaceTapConfigurationsCreateOrUpdateOperation : Operation<NetworkInterfaceTapConfiguration>, IOperationSource<NetworkInterfaceTapConfiguration>
+    public partial class NetworkInterfaceTapConfigurationsCreateOrUpdateOperation : Operation<NetworkInterfaceTapConfiguration>
     {
         private readonly OperationInternal<NetworkInterfaceTapConfiguration> _operation;
 
@@ -28,7 +28,7 @@ namespace Azure.Network.Management.Interface
 
         internal NetworkInterfaceTapConfigurationsCreateOrUpdateOperation(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, Request request, Response response)
         {
-            IOperation<NetworkInterfaceTapConfiguration> nextLinkOperation = NextLinkOperationImplementation.Create(this, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.AzureAsyncOperation);
+            IOperation<NetworkInterfaceTapConfiguration> nextLinkOperation = NextLinkOperationImplementation.Create(CreateResultAsync, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.AzureAsyncOperation);
             _operation = new OperationInternal<NetworkInterfaceTapConfiguration>(clientDiagnostics, nextLinkOperation, response, "NetworkInterfaceTapConfigurationsCreateOrUpdateOperation");
         }
 
@@ -67,15 +67,9 @@ namespace Azure.Network.Management.Interface
         /// <inheritdoc />
         public override ValueTask<Response<NetworkInterfaceTapConfiguration>> WaitForCompletionAsync(TimeSpan pollingInterval, CancellationToken cancellationToken = default) => _operation.WaitForCompletionAsync(pollingInterval, cancellationToken);
 
-        NetworkInterfaceTapConfiguration IOperationSource<NetworkInterfaceTapConfiguration>.CreateResult(Response response, CancellationToken cancellationToken)
+        private async ValueTask<NetworkInterfaceTapConfiguration> CreateResultAsync(bool @async, Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            return NetworkInterfaceTapConfiguration.DeserializeNetworkInterfaceTapConfiguration(document.RootElement);
-        }
-
-        async ValueTask<NetworkInterfaceTapConfiguration> IOperationSource<NetworkInterfaceTapConfiguration>.CreateResultAsync(Response response, CancellationToken cancellationToken)
-        {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            using var document = async ? await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false) : JsonDocument.Parse(response.ContentStream);
             return NetworkInterfaceTapConfiguration.DeserializeNetworkInterfaceTapConfiguration(document.RootElement);
         }
     }

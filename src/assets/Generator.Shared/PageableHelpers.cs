@@ -40,6 +40,9 @@ namespace Azure.Core
         public static AsyncPageable<T> CreateAsyncPageable<T>(Func<string?, int?, CancellationToken, IAsyncEnumerable<Page<T>>> enumerableFactory, ClientDiagnostics clientDiagnostics, string scopeName) where T : notnull
             => new AsyncPageableWrapper<T>((ct, ph) => new AsyncEnumerableWithScope<T>(enumerableFactory(ct, ph, default), clientDiagnostics, scopeName));
 
+        public static AsyncPageable<T> CreateAsyncPageable<T>(Func<Response, string?, int?, CancellationToken, IAsyncEnumerable<Page<T>>> enumerableFactory, Response initialResponse, ClientDiagnostics clientDiagnostics, string scopeName) where T : notnull
+            => new AsyncPageableWrapper<T>((ct, ph) => new AsyncEnumerableWithScope<T>(enumerableFactory(initialResponse, ct, ph, default), clientDiagnostics, scopeName));
+
         public static Pageable<T> CreateEnumerable<T>(Func<int?, Page<T>> firstPageFunc, Func<string?, int?, Page<T>>? nextPageFunc, int? pageSize = default) where T : notnull
         {
             PageFunc<T> first = (continuationToken, pageSizeHint) => firstPageFunc(pageSizeHint);

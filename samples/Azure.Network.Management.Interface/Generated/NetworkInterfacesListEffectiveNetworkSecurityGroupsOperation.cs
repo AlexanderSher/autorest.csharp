@@ -17,7 +17,7 @@ using Azure.Network.Management.Interface.Models;
 namespace Azure.Network.Management.Interface
 {
     /// <summary> Gets all network security groups applied to a network interface. </summary>
-    public partial class NetworkInterfacesListEffectiveNetworkSecurityGroupsOperation : Operation<EffectiveNetworkSecurityGroupListResult>, IOperationSource<EffectiveNetworkSecurityGroupListResult>
+    public partial class NetworkInterfacesListEffectiveNetworkSecurityGroupsOperation : Operation<EffectiveNetworkSecurityGroupListResult>
     {
         private readonly OperationInternal<EffectiveNetworkSecurityGroupListResult> _operation;
 
@@ -28,7 +28,7 @@ namespace Azure.Network.Management.Interface
 
         internal NetworkInterfacesListEffectiveNetworkSecurityGroupsOperation(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, Request request, Response response)
         {
-            IOperation<EffectiveNetworkSecurityGroupListResult> nextLinkOperation = NextLinkOperationImplementation.Create(this, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.Location);
+            IOperation<EffectiveNetworkSecurityGroupListResult> nextLinkOperation = NextLinkOperationImplementation.Create(CreateResultAsync, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.Location);
             _operation = new OperationInternal<EffectiveNetworkSecurityGroupListResult>(clientDiagnostics, nextLinkOperation, response, "NetworkInterfacesListEffectiveNetworkSecurityGroupsOperation");
         }
 
@@ -67,15 +67,9 @@ namespace Azure.Network.Management.Interface
         /// <inheritdoc />
         public override ValueTask<Response<EffectiveNetworkSecurityGroupListResult>> WaitForCompletionAsync(TimeSpan pollingInterval, CancellationToken cancellationToken = default) => _operation.WaitForCompletionAsync(pollingInterval, cancellationToken);
 
-        EffectiveNetworkSecurityGroupListResult IOperationSource<EffectiveNetworkSecurityGroupListResult>.CreateResult(Response response, CancellationToken cancellationToken)
+        private async ValueTask<EffectiveNetworkSecurityGroupListResult> CreateResultAsync(bool @async, Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            return EffectiveNetworkSecurityGroupListResult.DeserializeEffectiveNetworkSecurityGroupListResult(document.RootElement);
-        }
-
-        async ValueTask<EffectiveNetworkSecurityGroupListResult> IOperationSource<EffectiveNetworkSecurityGroupListResult>.CreateResultAsync(Response response, CancellationToken cancellationToken)
-        {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            using var document = async ? await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false) : JsonDocument.Parse(response.ContentStream);
             return EffectiveNetworkSecurityGroupListResult.DeserializeEffectiveNetworkSecurityGroupListResult(document.RootElement);
         }
     }
