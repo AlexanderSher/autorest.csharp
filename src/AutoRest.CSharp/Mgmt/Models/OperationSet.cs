@@ -30,10 +30,13 @@ namespace AutoRest.CSharp.Mgmt.Models
         /// </summary>
         public HashSet<Operation> Operations { get; }
 
+        public OperationGroup OperationGroup { get; }
+
         public int Count => Operations.Count;
 
-        public OperationSet(string requestPath)
+        public OperationSet(OperationGroup operationGroup, string requestPath)
         {
+            OperationGroup = operationGroup;
             RequestPath = requestPath;
             Operations = new HashSet<Operation>();
         }
@@ -49,15 +52,6 @@ namespace AutoRest.CSharp.Mgmt.Models
             if (path != RequestPath)
                 throw new InvalidOperationException($"Cannot add operation with path {path} to OperationSet with path {RequestPath}");
             Operations.Add(operation);
-        }
-
-        /// <summary>
-        /// Remove an operation from this <see cref="OperationSet"/>
-        /// </summary>
-        /// <param name="operation">The operation to be removed</param>
-        public void Remove(Operation operation)
-        {
-            Operations.Remove(operation);
         }
 
         public IEnumerator<Operation> GetEnumerator() => Operations.GetEnumerator();
@@ -104,7 +98,7 @@ namespace AutoRest.CSharp.Mgmt.Models
         private RequestPath GetNonHintRequestPath()
         {
             var operation = FindBestOperation();
-            return Models.RequestPath.FromOperation(operation, MgmtContext.Library.GetOperationGroup(operation));
+            return Models.RequestPath.FromOperation(operation, OperationGroup);
         }
 
         private Operation FindBestOperation()

@@ -36,11 +36,13 @@ namespace AutoRest.CSharp.Output.Models.Types
         private readonly string _defaultNamespace;
         private readonly string _libraryName;
 
-        public DataPlaneOutputLibrary(CodeModel codeModel, BuildContext<DataPlaneOutputLibrary> context)
+        public DataPlaneOutputLibrary(BuildContext.LibraryRef libraryRef, CodeModel codeModel, BuildContext<DataPlaneOutputLibrary> context)
         {
             _context = context;
             _sourceInputModel = context.SourceInputModel;
             _input = new CodeModelConverter().CreateNamespace(codeModel, _context.SchemaUsageProvider);
+
+            libraryRef.Library = this;
 
             _defaultNamespace = Configuration.Namespace ?? _input.Name;
             _libraryName = Configuration.LibraryName ?? _input.Name;

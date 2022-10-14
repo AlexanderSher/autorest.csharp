@@ -16,26 +16,35 @@ namespace AutoRest.CSharp.Output.Models.Types
     {
         private TypeFactory? _typeFactory;
 
-        private T? _library;
-        public T Library => _library ??= EnsureLibrary();
+        public T Library
+        {
+            get
+            {
+                if (BaseLibraryRef.Library is null)
+                {
+                    return EnsureLibrary();
+                }
+
+                return (T)BaseLibraryRef.Library!;
+            }
+        }
 
         private T EnsureLibrary()
         {
-            T library;
             if (Configuration.Generation1ConvenienceClient)
             {
-                library = (T)(object)new DataPlaneOutputLibrary(CodeModel, (BuildContext<DataPlaneOutputLibrary>)(object)this);
+                new DataPlaneOutputLibrary(BaseLibraryRef, CodeModel, (BuildContext<DataPlaneOutputLibrary>)(object)this);
             }
             else if (Configuration.AzureArm)
             {
-                library = (T)(object)new MgmtOutputLibrary();
+                new MgmtOutputLibrary(BaseLibraryRef);
             }
             else
             {
                 throw new InvalidOperationException($"{nameof(BuildContext)} isn't supported in DPG");
             }
-            BaseLibrary = library;
-            return library;
+
+            return BaseLibraryRef.Library as T ?? throw new NullReferenceException();
         }
 
         public BuildContext(CodeModel codeModel, SourceInputModel? sourceInputModel)
